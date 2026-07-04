@@ -1,0 +1,75 @@
+// 窗口规则 (Window Rules) 允许你为特定的单个窗口调整行为。
+// 更多信息请参考维基页面：
+// https://github.com/YaLTeR/niri/wiki/Configuration:-Window-Rules
+
+// 修复 WezTerm 的初始配置 Bug
+// 通过设置一个空的默认列宽 (default-column-width) 来绕过它。
+window-rule {
+    // 这里的正则表达式特意写得非常精确，
+    // 因为这是默认配置，我们希望避免误伤其他应用。
+    // 如果你愿意，也可以直接简写为 app-id="wezterm"。
+    match app-id=r#"^org\.wezfurlong\.wezterm$"#
+    default-column-width {}
+}
+
+// 防止两个密码管理器被屏幕录制或截图捕获。
+window-rule {
+    match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+    match app-id=r#"^org\.gnome\.World\.Secrets$"#
+
+    // 禁止屏幕捕捉（截图或录屏）
+    block-out-from "screen-capture"
+
+    // 如果你希望它们在第三方截图工具中可见，请改用以下配置：
+    // block-out-from "screencast"
+}
+
+// 窗口外观配置：控制圆角、裁剪和透明度。
+window-rule {
+    geometry-corner-radius 12
+    clip-to-geometry true
+    opacity 1.0
+    draw-border-with-background false
+}
+
+// 默认将 Firefox 的“画中画”播放器以浮动模式打开。
+window-rule {
+    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
+    open-floating true
+}
+
+window-rule {
+    match app-id=r#"^(code)$"#
+    opacity 0.92
+}
+
+window-rule {
+    match app-id=r#"^antigravity$"#
+    opacity 0.92
+}
+
+window-rule {
+    match app-id=r#"^kitty$"#
+    opacity 0.92
+}
+
+// ── 终端通用：始终透明，无模糊 ──────────────────────────
+window-rule {
+    match app-id="^kitty$"
+    match app-id="^Alacritty$"
+    opacity 0.92
+    geometry-corner-radius 12
+    clip-to-geometry true
+}
+
+// ── 终端聚焦时：毛玻璃模糊 ──────────────────────────────
+window-rule {
+    match app-id="^kitty$" is-focused=true
+    match app-id="^Alacritty$" is-focused=true
+    opacity 0.92
+    background-effect {
+        blur true
+        // 默认 xray=true（透壁纸），想模糊其他窗口内容改成：
+        // xray false
+    }
+}
